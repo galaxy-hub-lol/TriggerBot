@@ -1,0 +1,319 @@
+-- GALAXYHUB
+-- Cinematic Intro | Permanent ESP | Triggerbot | PC + Mobile GUI
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+
+local LP = Players.LocalPlayer
+local PG = LP:WaitForChild("PlayerGui")
+local Camera = Workspace.CurrentCamera
+
+local old = PG:FindFirstChild("GalaxyHub")
+if old then old:Destroy() end
+
+local GUI = Instance.new("ScreenGui")
+GUI.Name = "GalaxyHub"
+GUI.ResetOnSpawn = false
+GUI.IgnoreGuiInset = true
+GUI.DisplayOrder = 999
+GUI.Parent = PG
+
+-- INTRO
+local blur = Instance.new("BlurEffect")
+blur.Size = 0
+blur.Parent = Lighting
+
+local intro = Instance.new("Frame")
+intro.Size = UDim2.fromScale(1,1)
+intro.BackgroundColor3 = Color3.fromRGB(5,5,12)
+intro.Parent = GUI
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,80)
+title.Position = UDim2.fromScale(0,0.36)
+title.BackgroundTransparency = 1
+title.Text = "GalaxyHub"
+title.TextColor3 = Color3.new(1,1,1)
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 46
+title.TextTransparency = 1
+title.Parent = intro
+
+local credit = Instance.new("TextLabel")
+credit.Size = UDim2.new(1,0,0,30)
+credit.Position = UDim2.fromScale(0,0.50)
+credit.BackgroundTransparency = 1
+credit.Text = "made by lmfaolmao on discord"
+credit.TextColor3 = Color3.fromRGB(175,130,255)
+credit.Font = Enum.Font.GothamMedium
+credit.TextSize = 15
+credit.TextTransparency = 1
+credit.Parent = intro
+
+TweenService:Create(blur,TweenInfo.new(1),{Size=28}):Play()
+TweenService:Create(title,TweenInfo.new(1.5),{TextTransparency=0}):Play()
+TweenService:Create(credit,TweenInfo.new(1.8),{TextTransparency=0}):Play()
+
+task.wait(4.5)
+
+TweenService:Create(blur,TweenInfo.new(1),{Size=0}):Play()
+TweenService:Create(intro,TweenInfo.new(1),{BackgroundTransparency=1}):Play()
+TweenService:Create(title,TweenInfo.new(0.8),{TextTransparency=1}):Play()
+TweenService:Create(credit,TweenInfo.new(0.8),{TextTransparency=1}):Play()
+
+task.wait(1)
+intro:Destroy()
+blur:Destroy()
+
+-- MAIN GUI
+local Main = Instance.new("Frame")
+Main.Size = UDim2.fromOffset(225,135)
+Main.Position = UDim2.new(0.5,-112,0.5,-67)
+Main.BackgroundColor3 = Color3.fromRGB(12,12,19)
+Main.BorderSizePixel = 0
+Main.Active = true
+Main.Draggable = true
+Main.Parent = GUI
+
+Instance.new("UICorner",Main).CornerRadius = UDim.new(0,12)
+
+local border = Instance.new("UIStroke")
+border.Color = Color3.fromRGB(135,75,255)
+border.Thickness = 1.5
+border.Parent = Main
+
+local header = Instance.new("TextLabel")
+header.Size = UDim2.new(1,0,0,42)
+header.BackgroundTransparency = 1
+header.Text = "GalaxyHub"
+header.TextColor3 = Color3.new(1,1,1)
+header.Font = Enum.Font.GothamBlack
+header.TextSize = 18
+header.Parent = Main
+
+local sub = Instance.new("TextLabel")
+sub.Size = UDim2.new(1,0,0,20)
+sub.Position = UDim2.new(0,0,0,42)
+sub.BackgroundTransparency = 1
+sub.Text = "made by lmfaolmao on discord"
+sub.TextColor3 = Color3.fromRGB(155,125,200)
+sub.Font = Enum.Font.Gotham
+sub.TextSize = 10
+sub.Parent = Main
+
+-- TRIGGERBOT TOGGLE BUTTON
+local triggerEnabled = false
+local triggerCooldown = 0.08
+local lastShot = 0
+
+local TriggerBtn = Instance.new("TextButton")
+TriggerBtn.Size = UDim2.new(1,-24,0,34)
+TriggerBtn.Position = UDim2.new(0,12,0,74)
+TriggerBtn.BackgroundColor3 = Color3.fromRGB(35,20,65)
+TriggerBtn.Text = "Triggerbot: OFF"
+TriggerBtn.TextColor3 = Color3.new(1,1,1)
+TriggerBtn.Font = Enum.Font.GothamBold
+TriggerBtn.TextSize = 13
+TriggerBtn.Parent = Main
+
+Instance.new("UICorner",TriggerBtn).CornerRadius = UDim.new(0,8)
+
+local triggerStroke = Instance.new("UIStroke")
+triggerStroke.Color = Color3.fromRGB(135,75,255)
+triggerStroke.Thickness = 1
+triggerStroke.Parent = TriggerBtn
+
+local function setTriggerState(state)
+	triggerEnabled = state
+	TriggerBtn.Text = state and "Triggerbot: ON" or "Triggerbot: OFF"
+	TriggerBtn.BackgroundColor3 = state and Color3.fromRGB(110,50,220) or Color3.fromRGB(35,20,65)
+end
+
+TriggerBtn.MouseButton1Click:Connect(function()
+	setTriggerState(not triggerEnabled)
+end)
+
+-- MOBILE OPEN BUTTON
+local OpenButton = Instance.new("TextButton")
+OpenButton.Size = UDim2.fromOffset(55,35)
+OpenButton.Position = UDim2.new(0,12,0.5,0)
+OpenButton.BackgroundColor3 = Color3.fromRGB(35,20,65)
+OpenButton.Text = "GH"
+OpenButton.TextColor3 = Color3.new(1,1,1)
+OpenButton.Font = Enum.Font.GothamBlack
+OpenButton.TextSize = 14
+OpenButton.Active = true
+OpenButton.Draggable = true
+OpenButton.Visible = false
+OpenButton.Parent = GUI
+
+Instance.new("UICorner",OpenButton).CornerRadius = UDim.new(0,9)
+
+local function setVisible(state)
+	Main.Visible = state
+	OpenButton.Visible = not state and UIS.TouchEnabled
+end
+
+OpenButton.MouseButton1Click:Connect(function()
+	setVisible(true)
+end)
+
+-- PC Q KEY
+UIS.InputBegan:Connect(function(input,processed)
+	if processed then return end
+	if input.KeyCode == Enum.KeyCode.Q and not UIS.TouchEnabled then
+		setVisible(not Main.Visible)
+	end
+end)
+
+-- MOBILE CLOSE BUTTON
+local Close = Instance.new("TextButton")
+Close.Size = UDim2.fromOffset(27,27)
+Close.Position = UDim2.new(1,-32,0,7)
+Close.BackgroundColor3 = Color3.fromRGB(65,30,90)
+Close.Text = "X"
+Close.TextColor3 = Color3.new(1,1,1)
+Close.Font = Enum.Font.GothamBold
+Close.TextSize = 12
+Close.Parent = Main
+
+Instance.new("UICorner",Close).CornerRadius = UDim.new(0,7)
+
+Close.MouseButton1Click:Connect(function()
+	setVisible(false)
+end)
+
+-- TRIGGERBOT LOGIC
+local function isEnemy(targetModel)
+	for _, plr in ipairs(Players:GetPlayers()) do
+		if plr ~= LP and plr.Character == targetModel then
+			local hum = targetModel:FindFirstChildOfClass("Humanoid")
+			if not hum or hum.Health <= 0 then
+				return false
+			end
+			if plr.Team and LP.Team and plr.Team == LP.Team then
+				return false
+			end
+			return true
+		end
+	end
+	return false
+end
+
+local function fireEquippedTool()
+	local char = LP.Character
+	if not char then return end
+	local tool = char:FindFirstChildOfClass("Tool")
+	if not tool then return end
+
+	if typeof(tool.Activate) == "function" then
+		tool:Activate()
+	end
+end
+
+RunService.RenderStepped:Connect(function()
+	if not triggerEnabled then return end
+	if not Camera then Camera = Workspace.CurrentCamera end
+	if not Camera then return end
+
+	local char = LP.Character
+	if not char then return end
+
+	local rayParams = RaycastParams.new()
+	rayParams.FilterType = Enum.RaycastFilterType.Exclude
+	rayParams.FilterDescendantsInstances = {char}
+
+	local centerViewport = Vector2.new(Camera.ViewportSize.X * 0.5, Camera.ViewportSize.Y * 0.5)
+	local unitRay = Camera:ViewportPointToRay(centerViewport.X, centerViewport.Y)
+	local result = Workspace:Raycast(unitRay.Origin, unitRay.Direction * 1000, rayParams)
+
+	if result and result.Instance then
+		local hitModel = result.Instance:FindFirstAncestorOfClass("Model")
+		if hitModel and isEnemy(hitModel) then
+			local now = os.clock()
+			if now - lastShot >= triggerCooldown then
+				lastShot = now
+				fireEquippedTool()
+			end
+		end
+	end
+end)
+
+-- PERMANENT VISUAL NAME ESP
+local Connections = {}
+
+local function removeESP(plr)
+	local character = plr.Character
+	if not character then return end
+
+	local head = character:FindFirstChild("Head")
+	if head then
+		local tag = head:FindFirstChild("GalaxyHubNameESP")
+		if tag then tag:Destroy() end
+	end
+end
+
+local function createESP(plr,character)
+	if plr == LP then return end
+
+	local head = character:WaitForChild("Head",5)
+	if not head or not character.Parent then return end
+
+	removeESP(plr)
+
+	local billboard = Instance.new("BillboardGui")
+	billboard.Name = "GalaxyHubNameESP"
+	billboard.Adornee = head
+	billboard.Size = UDim2.fromOffset(180,35)
+	billboard.StudsOffset = Vector3.new(0,2.5,0)
+	billboard.AlwaysOnTop = true
+	billboard.Parent = head
+
+	local name = Instance.new("TextLabel")
+	name.Size = UDim2.fromScale(1,1)
+	name.BackgroundTransparency = 1
+	name.Text = plr.DisplayName .. " (@" .. plr.Name .. ")"
+	name.TextColor3 = Color3.fromRGB(190,145,255)
+	name.TextStrokeTransparency = 0.15
+	name.Font = Enum.Font.GothamBold
+	name.TextSize = 12
+	name.Parent = billboard
+end
+
+local function setupPlayer(plr)
+	if plr == LP then return end
+
+	if Connections[plr] then
+		Connections[plr]:Disconnect()
+	end
+
+	Connections[plr] = plr.CharacterAdded:Connect(function(character)
+		task.wait(0.3)
+		createESP(plr,character)
+	end)
+
+	if plr.Character then
+		task.spawn(createESP,plr,plr.Character)
+	end
+end
+
+for _,plr in ipairs(Players:GetPlayers()) do
+	setupPlayer(plr)
+end
+
+Players.PlayerAdded:Connect(setupPlayer)
+
+Players.PlayerRemoving:Connect(function(plr)
+	removeESP(plr)
+
+	if Connections[plr] then
+		Connections[plr]:Disconnect()
+		Connections[plr] = nil
+	end
+end)
+
+print("[GalaxyHub] Loaded successfully")
